@@ -1,0 +1,21 @@
+function q = inverse(H, myrobot)
+DH = myrobot;
+Rd = H(1:3, 1:3);
+od = H(1:3, 4); 
+o = od - R*[0;0; DH.d(6)];
+
+
+disp(R)
+D = (o(1)^2+o(2)^2-DH.d(2)^2+(o(3)-DH.d(1))^2-DH.a(2)^2-DH.d(4)^2)/(2*DH.a(2)*DH.d(4));
+
+q(1) = atan2(o(2),o(1)) - atan2(-DH.d(2), real(sqrt(o(1)^2+o(2)^2-DH.d(2)^2)));
+q(3) = atan2(D, real(sqrt(1-D^2)));
+q(2) = atan2(o(3)-DH.d(1), real(sqrt(o(1)^2+o(2)^2-DH.d(2)^2))) - atan2(-DH.d(4)*cos(q(3)),DH.a(2)+DH.d(4)*sin(q(3)));
+
+
+
+q(4) = atan2(R(2,3), R(1,3));
+q(5) = atan2(real(sqrt(1-R(3,3)^2)),R(3,3));
+q(6) = atan2(R(3,2), -R(3,1));
+
+end
