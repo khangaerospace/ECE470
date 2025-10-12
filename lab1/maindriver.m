@@ -39,3 +39,28 @@ H = [cos(pi/4), -sin(pi/4), 0,20;
     0,0,1,15;
     0,0,0,1]
 q = inverse(H, myrobot)
+
+p_start = [10, 23, 15];
+p_end   = [30, 30, 100];
+
+d = [linspace(p_start(1), p_end(1), 100)', ...
+     linspace(p_start(2), p_end(2), 100)', ...
+     linspace(p_start(3), p_end(3), 100)'];
+
+R = [cos(pi/4), -sin(pi/4), 0;
+     sin(pi/4),  cos(pi/4), 0;
+     0, 0, 1];
+
+q = zeros(100, 6);
+for i = 1:100
+    pos = d(i, :);  % [x y z]
+
+    H = [R, pos'; 
+         0 0 0 1];
+
+    q(i, :) = inverse(H, myrobot);
+end
+
+plot3(o(:,1),o(:,2),o(:,3))
+hold on
+plot(myrobot,q)
