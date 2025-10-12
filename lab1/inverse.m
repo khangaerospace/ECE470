@@ -28,7 +28,7 @@ function q = inverse(H, myrobot)
 
     R = R3_0' * Rd;
     q(4) = atan2(R(2,3), R(1,3));
-    q(5) = atan2(sqrt(max(1 - R(3,3)^2,0)), R(3,3));   % equivalent to acos(R(3,3))
+    q(5) = atan2(sqrt(1 - R(3,3)^2), R(3,3));
     q(6) = atan2(R(3,2), -R(3,1));
 
 end
