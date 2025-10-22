@@ -1,3 +1,5 @@
+% This is only to test the forward.m code, it's also in Lab1.m file
+
 clear; clc; close all;
 
 % join angle

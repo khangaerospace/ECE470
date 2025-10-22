@@ -1,3 +1,7 @@
+% This is only to test the inverse.m code, it's also in Lab1.m file
+
+clear; clc; close all;
+
 DH = [
         0, 76, 0, pi/2;
         0, -23.65, 43.23, 0;

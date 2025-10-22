@@ -1,7 +1,8 @@
 function H = forward(joint, myrobot)
-% Compute the transformation matrix for each joint using DH parameters
+    % Compute the transformation matrix for each joint using DH parameters
    DH = myrobot;
 
+   % finding the DH parameter
    d0 = DH.d;
    a0 = DH.a;
    alpha0 = DH.alpha;
