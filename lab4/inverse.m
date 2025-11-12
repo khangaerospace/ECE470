@@ -1,30 +1,22 @@
 function q = inverse(H, myrobot)
-    DH = myrobot; 
-    Rd = H(1:3, 1:3); od = H(1:3, 4); 
-    oc = od - Rd*[DH.a(6);0; DH.d(6)];
+    % This function calculates the joint angles (q) required for a robot
+    % to reach a desired end-effector pose represented by the homogeneous
+    % transformation matrix H, using the robot's DH parameters.
 
-    q = zeros(1,6); % make all the angle
-
-    q(1) = atan2(oc(2), oc(1));
-
-    % Geometry for planar part
-    r = sqrt(oc(1)^2 + oc(2)^2);
-    s = oc(3) - DH.d(1);
-    rho = r - DH.a(1);
-    L = sqrt(DH.a(3)^2 + DH.d(4)^2);
-    d = sqrt(rho^2 + s^2);
-    phi = atan2(DH.a(3),DH.d(4));
-
-    % Joint 3
-    q(3) = atan2(d^2 - L^2 - DH.a(2)^2, sqrt( (2*DH.a(2)*L)^2 - (d^2 - L^2 - DH.a(2)^2)^2)) - phi;
-
-    % Joint 2
+    DH = myrobot;
+    Rd = H(1:3, 1:3);
+    od = H(1:3, 4); 
+    o = od - Rd*[0;0; DH.d(6)]; % Calculate the position of the end-effector relative to the last joint
     
+    % cosine law
+    D = (o(1)^2+o(2)^2-DH.d(2)^2+(o(3)-DH.d(1))^2-DH.a(2)^2-DH.d(4)^2)/(2*DH.a(2)*DH.d(4));
     
-    phi2 = atan2(sqrt(DH.a(3)^2 + DH.d(4)^2)*sin(q(3)+phi-pi/2), ...
-        DH.a(2) + sqrt(DH.a(3)^2 + DH.d(4)^2)*cos(q(3)+phi-pi/2));
-    q(2) = atan2(s, rho) - phi2;
-
+    % Calculate the first joint angle 
+    q(1) = atan2(o(2),o(1)) - atan2(-DH.d(2), real(sqrt(o(1)^2+o(2)^2-DH.d(2)^2)));
+    q(3) = atan2(D, real(sqrt(1-D^2)));
+    q(2) = atan2(o(3)-DH.d(1), real(sqrt(o(1)^2+o(2)^2-DH.d(2)^2))) - atan2(-DH.d(4)*cos(q(3)),DH.a(2)+DH.d(4)*sin(q(3)));
+    
+    % Loop through the first three joints to compute their transformation matrices
     H3_0 = eye(4);
     for i = 1:3
         alpha = DH.alpha(i);
@@ -44,4 +36,5 @@ function q = inverse(H, myrobot)
     q(4) = atan2(R(2,3), R(1,3));
     q(5) = atan2(sqrt(1 - R(3,3)^2), R(3,3));
     q(6) = atan2(R(3,2), -R(3,1));
+
 end
