@@ -24,5 +24,5 @@ H2 = eul2tr([0 pi -pi/2]);
 H2(1:3,4)=100*[3; -1; 2;]/4;
 q2 = inverse(H2,myrobot);
 
-tau = att2(q1,q2,myrobot)
+tau = att(q1,q2,myrobot)
 

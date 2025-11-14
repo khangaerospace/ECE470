@@ -17,7 +17,7 @@ function tau = att(q,q2,myrobot)
         o_start = H_start(1:3,4);
         o_final = H_end(1:3,4);
 
-        Fi_att = -zeta*(o_start - o_final);s
+        Fi_att = -zeta*(o_start - o_final);
 
         tau = tau + Joi' * Fi_att;
     end
