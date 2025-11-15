@@ -9,6 +9,7 @@ function tau = att(q,q2,myrobot)
     for i = 1:6
         Joi = jacobian(q, myrobot, i);
 
+
         % find the start and end possition
         H_start = forward_kin(q, myrobot, i) ;
         H_end = forward_kin(q2, myrobot, i);
@@ -25,35 +26,31 @@ function tau = att(q,q2,myrobot)
 end
 
 
-function J = jacobian(q, myrobot, j)
+function J = jacobian(q, myrobot, i)
     % Initialize the Jacobian matrix. assuming every join is rotation
     J = zeros(3, 6);
 
     % find the join posision
-    H = forward_kin(q,myrobot,j); % find the DH table of the current join to the next
-    o_end = H(1:3,4); % find the location of the joint
+    H = forward_kin(q,myrobot,i); % find the DH table of the current join to the next
+    o_i = H(1:3,4); % find the location of the joint
 
     % join at position 0
-    z_i = [0, 0, 1]';
-    o_i = [0, 0, 0]';
-
-    for i = 1:j
-        J(1:3, i) =  cross(z_i, (o_end - o_i));
-
-        % continue to find the current position
-
-        H_i = forward_kin(q,myrobot,i);
-        o_i = H_i(1:3, 4); % get position
-        z_i = H_i(1:3, 3); % get the z-axis direction of the current joint
-
-
+    z_j_1 = [0, 0, 1]';
+    o_j_1 = [0, 0, 0]';
+    
+    for j = 1:i
+        J(1:3, j) =  cross(z_j_1, (o_i - o_j_1));
+        
+        H_i = forward_kin(q,myrobot,j);
+        o_j_1 = H_i(1:3, 4); % get position
+        z_j_1 = H_i(1:3, 3); % get the z-axis direction of the current joint
     end
 end
 
 
 function H = forward_kin(joint, myrobot, j)
     
-    H = eye(4);
+     H = eye(4);
 
     
     for i = 1:j
@@ -74,9 +71,3 @@ function H = forward_kin(joint, myrobot, j)
     end
      
 end
-
-
-
-
-
-

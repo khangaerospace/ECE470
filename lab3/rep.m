@@ -14,36 +14,35 @@ function tau = rep(q,myrobot,obs)
         H = forward_kin(q, myrobot, i);
         %o = H(1:3,4);
         
-        if type == 'sph'
+        if strcmp(type, 'sph')
+            % if sphere then we will 
             o = H(1:3,4);
-            o_b = o - (c + R*(o-c)/norm(o-c));
         end
-        if type == 'cyl'
+        if strcmp(type, 'cyl')
             o = H(1:2,4);
-            o_b = (1 - (R/(norm(o-c))))*(o-c);
         end
 
         % combute o - b
-        
-
-        % distance from the object
+        o_b = o - ( (R* (o-c)/norm(o-c)) + c);
         rho_i = norm(o-c) - R;
 
         if rho_i <= rho
             % compute the repulsive force
-            F = eta((1/rho_i) - (1/rho) )*(o_b/norm(o_b));
-            if type == "cyl"
+            F = eta*((1/rho_i) - (1/rho) )*(1/norm(o_b))*(o_b/norm(o_b)^2);
+            if strcmp(type, "cyl")
                 F(3) = 0;
             end
         else
             F = zeros(3,1);
         end
 
-        tau = tau + J'*F;
+        tau = tau + J'*F; % calculating torque
 
     end
 
-    tau  = tau/norm(tau);
+    if norm(tau) ~= 0 % incase we divide by 0
+        tau = tau/norm(tau);
+    end
 end
 
 function J = jacobian(q, myrobot, j)

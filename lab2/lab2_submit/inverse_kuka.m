@@ -16,13 +16,13 @@ function q = inverse_kuka(H, myrobot)
     phi = atan2(DH.a(3),DH.d(4));
 
     % Joint 3
-    q(3) = atan2(d^2 - L^2 - DH.a(2)^2, sqrt( (2*DH.a(2)*L)^2 - (d^2 - L^2 - DH.a(2)^2)^2)) - phi;
+    q(3) = atan2(d^2 - L^2 - DH.a(2)^2, real(sqrt( (2*DH.a(2)*L)^2 - (d^2 - L^2 - DH.a(2)^2)^2))) - phi;
 
     % Joint 2
-    psi = 
     
-    phi2 = atan2(sqrt(DH.a(3)^2 + DH.d(4)^2)*sin(q(3)+atan2(DH.a(3),DH.d(4))-pi/2), ...
-        DH.a(2) + sqrt(DH.a(3)^2 + DH.d(4)^2)*cos(q(3)+atan2(DH.a(3),DH.d(4))-pi/2));
+    
+    phi2 = atan2(sqrt(DH.a(3)^2 + DH.d(4)^2)*sin(q(3)+phi-pi/2), ...
+        DH.a(2) + sqrt(DH.a(3)^2 + DH.d(4)^2)*cos(q(3)+phi-pi/2));
     q(2) = atan2(s, rho) - phi2;
 
     H3_0 = eye(4);
