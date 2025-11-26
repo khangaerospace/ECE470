@@ -3,37 +3,63 @@ function tau = rep(q,myrobot,obs)
     tau = zeros(6,1);
     eta = 1;
 
-    % set all parameter
-    rho = obs.rho0;
-    c = obs.c;
-    R = obs.R;
-    type = obs.type;
-
     for i = 1:numel(q)
         Joi = jacobian(q, myrobot, i);
         H = forward_kin(q, myrobot, i);
-        %o = H(1:3,4);
-        
-        if strcmp(type, 'sph')
-            % if sphere then we will 
-            o = H(1:3,4);
-        end
-        if strcmp(type, 'cyl')
-            o = H(1:2,4);
-        end
-
-        % combute o - b
-        o_b = o - ( (R* (o-c)/norm(o-c)) + c);
-        rho_i = norm(o-c) - R;
-
-        if rho_i <= rho
-            % compute the repulsive force
-            F = eta*((1/rho_i) - (1/rho) )*(1/norm(o_b))*(o_b/norm(o_b)^2);
-            if strcmp(type, "cyl")
-                F(3) = 0;
+        o = H(1:3,4);
+        F = [0,0,0]';
+        for k = 1:numel(obs)
+            
+            ob = obs{k};
+            type = string(ob.type);
+            if strcmp(type, 'plane')
+                try
+                    z_ground = ob.z;
+                catch
+                    z_ground = 0;
+                end
+                rho0 = ob.rho0;
+                if o(3) > z_ground
+                    b = [o(1) o(2) z_ground];
+                    v = o - b;
+                    rho = norm(v);
+                    if rho <= rho0
+                        F = F + eta*( 1/rho - 1/rho0)*(v/rho^3);
+                    end
+                end
             end
-        else
-            F = zeros(3,1);
+            if strcmp(type, 'cyl')
+                cx = ob.c(1);
+                cy = ob.c(2);
+                R = ob.R;
+                h = ob.h;
+                rho0 = ob.rho0;
+                try
+                    z_ground = ob.z;
+                catch
+                    z_ground = 0;
+                end
+                r_vec = [o(1)-cx; o(2)-cy];
+                r = norm(r_vec);
+                try
+                    rhat = r_vec/r;
+                catch
+                    rhat = [0, 0];
+                end
+
+                z_top = z_ground + h;
+
+                r_clamp = min(r, R);
+                z_clamp = min(max(o(3), z_ground), z_top);
+
+                b = [cx; cy; z_clamp] + [r_clamp*rhat; 0];
+                v = o-b;
+                rho = norm(v);
+                if rho > 0 && rho<rho0
+                    F = F + eta*( 1/rho - 1/rho0)*(v/rho^3);
+                end
+
+            end
         end
 
         tau = tau + Joi'*F; % calculating torque
